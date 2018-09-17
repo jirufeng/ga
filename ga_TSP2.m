@@ -158,70 +158,70 @@ end
 %------------------------------------------------
 %“交叉”操作
 function scro=cro(s,seln,pc,citenum,linenum)
-    pcc=pro(pc);  %根据交叉概率决定是否进行交叉操作，1则是，0则否
+pcc=pro(pc);  %根据交叉概率决定是否进行交叉操作，1则是，0则否
 
-    s1 = s(seln(1),:);
-    s2 = s(seln(2),:);
-    scro(1,:) = s1;
-    scro(2,:) = s2;
-    if pcc==1
-        [si1,sid1,X1,~,~] = slovedecode(s1,citenum,linenum);
-        [si2,sid2,X2,~,~] = slovedecode(s2,citenum,linenum);
-        sbn = length(si1);
-
-        c1=round(rand*(sbn-2))+1;  %在[1,bn-1]范围内随机产生一个交叉位
-        c2=round(rand*(sbn-2))+1;
-        chb1=min(c1,c2);
-        chb2=max(c1,c2);
-
-        %三部分分别进行交叉
-        middle=si1(chb1+1:chb2);
-        si1(chb1+1:chb2)=si2(chb1+1:chb2);
-        si2(chb1+1:chb2)=middle;
-        middle=sid1(chb1+1:chb2);
-        sid1(chb1+1:chb2)=sid2(chb1+1:chb2);
-        sid2(chb1+1:chb2)=middle;
-
-        cc1=round(rand*(citenum-2))+1;  %在[1,bn-1]范围内随机产生一个交叉位
-        cc2=round(rand*(citenum-2))+1;
-        cchb1=min(cc1,cc2);
-        cchb2=max(cc1,cc2);
-        middle=X1(cchb1+1:cchb2,:);
-        X1(cchb1+1:cchb2,:)=X2(cchb1+1:cchb2,:);
-        X1(cchb1+1:cchb2,:)=middle;
-
-        for i=1:chb1 %似乎有问题
-            while find(si1(chb1+1:chb2)==si1(i))
-                zhi=find(si1(chb1+1:chb2)==si1(i));
-                si1(i)=si2(chb1+zhi);
-                sid1(i)=sid2(chb1+zhi);
-            end
-            while find(si2(chb1+1:chb2)==si2(i))
-                zhi=find(si2(chb1+1:chb2)==si2(i));
-                si2(i)=si1(chb1+zhi);
-                sid2(i)=sid1(chb1+zhi);
-            end
+s1 = s(seln(1),:);
+s2 = s(seln(2),:);
+scro(1,:) = s1;
+scro(2,:) = s2;
+if pcc==1
+    [si1,sid1,X1,~,~] = slovedecode(s1,citenum,linenum);
+    [si2,sid2,X2,~,~] = slovedecode(s2,citenum,linenum);
+    sbn = length(si1);
+    
+    c1=round(rand*(sbn-2))+1;  %在[1,bn-1]范围内随机产生一个交叉位
+    c2=round(rand*(sbn-2))+1;
+    chb1=min(c1,c2);
+    chb2=max(c1,c2);
+    
+    %三部分分别进行交叉
+    middle=si1(chb1+1:chb2);
+    si1(chb1+1:chb2)=si2(chb1+1:chb2);
+    si2(chb1+1:chb2)=middle;
+    middle=sid1(chb1+1:chb2);
+    sid1(chb1+1:chb2)=sid2(chb1+1:chb2);
+    sid2(chb1+1:chb2)=middle;
+    
+    cc1=round(rand*(citenum-2))+1;  %在[1,bn-1]范围内随机产生一个交叉位
+    cc2=round(rand*(citenum-2))+1;
+    cchb1=min(cc1,cc2);
+    cchb2=max(cc1,cc2);
+    middle=X1(cchb1+1:cchb2,:);
+    X1(cchb1+1:cchb2,:)=X2(cchb1+1:cchb2,:);
+    X1(cchb1+1:cchb2,:)=middle;
+    
+    for i=1:chb1 %似乎有问题
+        while find(si1(chb1+1:chb2)==si1(i))
+            zhi=find(si1(chb1+1:chb2)==si1(i));
+            si1(i)=si2(chb1+zhi);
+            sid1(i)=sid2(chb1+zhi);
         end
-        for i=chb2+1:sbn
-            while find(si1(1:chb2)==si1(i))
-                zhi=logical(si1(1:chb2)==si1(i));
-                si1(i)=si2(zhi);
-                sid1(i)=sid2(zhi);
-            end
-            while find(si2(1:chb2)==si2(i))
-                zhi=find(si2(1:chb2)==si2(i));
-                si2(i)=si1(zhi);
-                sid2(i)=sid1(zhi);
-            end
+        while find(si2(chb1+1:chb2)==si2(i))
+            zhi=find(si2(chb1+1:chb2)==si2(i));
+            si2(i)=si1(chb1+zhi);
+            sid2(i)=sid1(chb1+zhi);
         end
-        XMask = 1-tril(ones(12,12),1);
-        X1 = X1.*XMask;X1= X1+X1';
-        X2 = X2.*XMask;X2= X2+X2';
-
-        scro(1,:) = slovecode(si1,sid1,X1);
-        scro(2,:) = slovecode(si2,sid2,X2);
-
     end
+    for i=chb2+1:sbn
+        while find(si1(1:chb2)==si1(i))
+            zhi=logical(si1(1:chb2)==si1(i));
+            si1(i)=si2(zhi);
+            sid1(i)=sid2(zhi);
+        end
+        while find(si2(1:chb2)==si2(i))
+            zhi=find(si2(1:chb2)==si2(i));
+            si2(i)=si1(zhi);
+            sid2(i)=sid1(zhi);
+        end
+    end
+    XMask = 1-tril(ones(12,12),1);
+    X1 = X1.*XMask;X1= X1+X1';
+    X2 = X2.*XMask;X2= X2+X2';
+    
+    scro(1,:) = slovecode(si1,sid1,X1);
+    scro(2,:) = slovecode(si2,sid2,X2);
+    
+end
 end
 
 %--------------------------------------------------
