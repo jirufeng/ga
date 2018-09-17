@@ -16,16 +16,20 @@ function myga_TSP2(edgenum)
 
     %产生初始种群
     population=zeros(parent_number,edgenum);
-    for i=1:parent_number
+    i = 1;
+    while i <= parent_number
         temp = randperm(BitNum);
-        population(i,:) = temp(1:edgenum);
+        if test_liantong(temp(1:edgenum))==1
+            population(i,:) = temp(1:edgenum);
+            i = i+1;
+        end
     end
+    population=die(population);
+    length(population)
     [~,p]=objf(population,Clist,CityPop,edgenum);
 
     gn=1;
     fopt=zeros(gn,1);
-    ymean=zeros(gn,1);
-    ymax=zeros(gn,1);
     xmax=zeros(gnmax,edgenum);%第几代
     scnew=zeros(child_num,edgenum);%孩子
     smnew=zeros(child_num,edgenum);%变异，先生孩子，然后变异
@@ -40,11 +44,14 @@ function myga_TSP2(edgenum)
         end
         smnew=die(smnew);
         population1=[population;smnew];  %产生了新的种群
-        for i = 1:size(population1,1):
-            assert test_liantong(population1(i,:))==1;
+        for i = 1:size(smnew,1)
+            i
+            flag = test_liantong(smnew(i,:))
+            assert (flag==1);
+        end
         [f,p]=objf(population1,Clist,CityPop,edgenum);  %计算新种群的适应度
             % index记录排序后每个值原来的行数
-        [f, index] = sort(f,'descend'); % 将适应度函数值从小到大排序
+        [f, index] = sort(f,'descend') % 将适应度函数值从小到大排序
         population = population1(index(1:parent_number), :); % 先保留一部分较优的个体
         %记录当前代最好和平均的适应度
         
@@ -59,6 +66,8 @@ function myga_TSP2(edgenum)
     end
 
     [f,X]=fobj(xmax(end,1:edgenum),Clist,CityPop);
+    
+    X=tril(get_adjacency(xmax(end,1:edgenum)))
     figure;clf;hold on;
     plot(CityLoc(:,2),CityLoc(:,1),'rs');
     for ii=1:CiteNum
@@ -140,7 +149,6 @@ function scro=cro(population,seln,pc)
 
     edgenum=size(population,2);
     pcc=pro(pc);  %根据交叉概率决定是否进行交叉操作，1则是，0则否
-    seln
     scro(1,:)=population(seln(1),:);%选择的
     scro(2,:)=population(seln(2),:);
     if pcc==1
@@ -165,14 +173,16 @@ end
 
 function population = die(population)
     global line_info;
+    delete=[];
+    delete_index = 1;
     row_num = size(population,1)
     edge_num = size(population,2)
     i = 1;
-    while i<row_num
+    while i<=row_num
         if length(unique(population(i,:)))~=edge_num
-            i
-            population(i,:)=[]
-            row_num=row_num-1
+            delete(delete_index)=i;
+            delete_index=delete_index+1;
+            i=i+1;
             continue;
         end
         arr = eye(12);
@@ -186,14 +196,20 @@ function population = die(population)
             num=num+1;
         end
         arr1 = arr+arr';
-        view(biograph(arr,[],'ShowArrows','off','ShowWeights','on'));% 显示图
+        %view(biograph(arr,[],'ShowArrows','off','ShowWeights','on'));% 显示图
         if ~canget(arr1)
-            population(i,:)=[];
-            row_num=row_num-1;
+            delete(delete_index)=i;
+            delete_index=delete_index+1;
+            i=i+1;
             continue;
         end
         i=i+1;
          
+    end
+    population(delete,:)=[]
+    for i =1:size(population,1)
+        i
+        assert (test_liantong(population(i,:))==1);
     end
 
 end
@@ -210,7 +226,7 @@ function adjacency=get_adjacency(array16)
     arr=eye(12);
     global line_info;
     num =0;
-    for line_id=1:edge_num
+    for line_id=1:16
         line_index=array16(line_id);
         x1 = line_info(line_index,1);
         y1 = line_info(line_index,2);
@@ -224,28 +240,28 @@ function flag=test_liantong(array16)
     flag = canget(adjacency);
 end
 function [Clist,CityLoc,CityNum]=testcase
-CityLoc=[39.91667 116.41667;
-    45.75000 126.63333;
-    43.45 87.36;
-    34.26667,108.95000;
-    34.76667,113.65000;
-    31.14 121.29;
-    30.35 114.17;
-    29.35 106.33;
-    30.40 104.04;
-    29.39 91.08;
-    25.04 102.42;
-    23.16667,113.23333];
-CityNum = [1961.24 1063.60 311.03 846.78 862.65 2301.91 978.54 2884.62 1404.76...
-    55.94 643.20 1035.79];
+    CityLoc=[39.91667 116.41667;
+        45.75000 126.63333;
+        43.45 87.36;
+        34.26667,108.95000;
+        34.76667,113.65000;
+        31.14 121.29;
+        30.35 114.17;
+        29.35 106.33;
+        30.40 104.04;
+        29.39 91.08;
+        25.04 102.42;
+        23.16667,113.23333];
+    CityNum = [1961.24 1063.60 311.03 846.78 862.65 2301.91 978.54 2884.62 1404.76...
+        55.94 643.20 1035.79];
 
-axesm utm   %设置投影方式，这是MATLAT自带的Universal Transverse Mercator （UTM）方式
-Z=utmzone(CityLoc);%utmzone根据latlon20里面的数据选择他认为合适的投影区域，可以是一个台站的经纬度，也可以是所有台站的经纬度（此时是平均）
-setm(gca,'zone',Z)
-h = getm(gca);
-R=zeros(size(CityLoc));
-for i=1:length(CityLoc)
-    [x,y]= mfwdtran(h,CityLoc(i,1),CityLoc(i,2));
-    Clist(i,:)=[x;y]/1e3;
-end
+    axesm utm   %设置投影方式，这是MATLAT自带的Universal Transverse Mercator （UTM）方式
+    Z=utmzone(CityLoc);%utmzone根据latlon20里面的数据选择他认为合适的投影区域，可以是一个台站的经纬度，也可以是所有台站的经纬度（此时是平均）
+    setm(gca,'zone',Z)
+    h = getm(gca);
+    R=zeros(size(CityLoc));
+    for i=1:length(CityLoc)
+        [x,y]= mfwdtran(h,CityLoc(i,1),CityLoc(i,2));
+        Clist(i,:)=[x;y]/1e3;
+    end
 end

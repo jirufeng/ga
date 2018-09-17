@@ -7,25 +7,29 @@ function myga_TSP2(edgenum)
     BitNum=(CiteNum-1)*CiteNum/2; %you chan choose 10, 30, 50, 75
     [Clist,CityLoc,CityPop]=testcase;% clist是直角坐标系坐标
 
-    population_size=70; %初始种群大小
-    parent_number = 50;
+    population_size=300; %初始种群大小
+    parent_number = 150;
     child_num = population_size - parent_number;
     gnmax=500;  %最大代数
-    pc=0.8; %交叉概率
-    mutation_rate=0.8; %变异概率
+    pc=1; %交叉概率
+    mutation_rate=0.2; %变异概率
 
     %产生初始种群
     population=zeros(parent_number,edgenum);
-    for i=1:parent_number
+    i = 1;
+    while i <= parent_number
         temp = randperm(BitNum);
-        population(i,:) = temp(1:edgenum);
+        if test_liantong(temp(1:edgenum))==1
+            population(i,:) = temp(1:edgenum);
+            i = i+1;
+        end
     end
+    population=die(population);
+    length(population)
     [~,p]=objf(population,Clist,CityPop,edgenum);
 
     gn=1;
     fopt=zeros(gn,1);
-    ymean=zeros(gn,1);
-    ymax=zeros(gn,1);
     xmax=zeros(gnmax,edgenum);%第几代
     scnew=zeros(child_num,edgenum);%孩子
     smnew=zeros(child_num,edgenum);%变异，先生孩子，然后变异
@@ -47,7 +51,7 @@ function myga_TSP2(edgenum)
         end
         [f,p]=objf(population1,Clist,CityPop,edgenum);  %计算新种群的适应度
             % index记录排序后每个值原来的行数
-        [f, index] = sort(f,'descend'); % 将适应度函数值从小到大排序
+        [f, index] = sort(f,'descend') % 将适应度函数值从小到大排序
         population = population1(index(1:parent_number), :); % 先保留一部分较优的个体
         %记录当前代最好和平均的适应度
         
@@ -62,6 +66,8 @@ function myga_TSP2(edgenum)
     end
 
     [f,X]=fobj(xmax(end,1:edgenum),Clist,CityPop);
+    
+    X=triu(get_adjacency(xmax(end,1:edgenum)))
     figure;clf;hold on;
     plot(CityLoc(:,2),CityLoc(:,1),'rs');
     for ii=1:CiteNum
@@ -167,14 +173,16 @@ end
 
 function population = die(population)
     global line_info;
+    delete=[];
+    delete_index = 1;
     row_num = size(population,1)
     edge_num = size(population,2)
     i = 1;
-    while i<row_num
+    while i<=row_num
         if length(unique(population(i,:)))~=edge_num
-            i
-            population(i,:)=[]
-            row_num=row_num-1
+            delete(delete_index)=i;
+            delete_index=delete_index+1;
+            i=i+1;
             continue;
         end
         arr = eye(12);
@@ -190,12 +198,18 @@ function population = die(population)
         arr1 = arr+arr';
         %view(biograph(arr,[],'ShowArrows','off','ShowWeights','on'));% 显示图
         if ~canget(arr1)
-            population(i,:)=[];
-            row_num=row_num-1;
+            delete(delete_index)=i;
+            delete_index=delete_index+1;
+            i=i+1;
             continue;
         end
         i=i+1;
          
+    end
+    population(delete,:)=[]
+    for i =1:size(population,1)
+        i
+        assert (test_liantong(population(i,:))==1);
     end
 
 end
@@ -226,16 +240,16 @@ function flag=test_liantong(array16)
     flag = canget(adjacency);
 end
 function [Clist,CityLoc,CityNum]=testcase
-    CityLoc=[39.91667 116.41667;
-        45.75000 126.63333;
-        43.45 87.36;
+    CityLoc=[39.91667 116.41667;%北京
+        45.75000 126.63333;%哈尔滨
+        43.45 87.36;%乌鲁木齐
         34.26667,108.95000;
         34.76667,113.65000;
-        31.14 121.29;
+        31.14 121.29;%上海
         30.35 114.17;
-        29.35 106.33;
-        30.40 104.04;
-        29.39 91.08;
+        29.35 106.33;%重庆
+        30.40 104.04;%成都
+        29.39 91.08;%拉萨
         25.04 102.42;
         23.16667,113.23333];
     CityNum = [1961.24 1063.60 311.03 846.78 862.65 2301.91 978.54 2884.62 1404.76...

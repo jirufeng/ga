@@ -9,7 +9,7 @@ for i=1:12
     end
 end
 
-%array16 = [   3     1    59    29    36    41    43    25    11    50    26    28    64    51    60    20]
+array16 = [  20    11    16    21    61    36    28    15    25     7    63    53     4    10    26     1]
 %test_liantong(array16)
 myga_TSP2(16);
 %ga_TSP2(33);
