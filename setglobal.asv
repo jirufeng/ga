@@ -60,7 +60,7 @@ function setglobal()
     for i =1:12
         for j = i+1:12
             dot_array(i,j)=k;
-            dot_array(j,i)=k;
+            dot_array(i,j)
             k=k+1;
         end
     end
