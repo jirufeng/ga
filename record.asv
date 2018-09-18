@@ -2,5 +2,3 @@ max33=[57     5    40    60    31    52    41    34    51    46     1    39     
 graph =  [ 57     5    40    60    31    52    41    34    51    46     1    39     6    59    26    58];;
 zuixiao = [ 57     5    40    60    31    52    51     1    59    26    58];
 zuixiaoshengchengshu = [ 5    51    60    57    52    40    31     1    59    26    58];
-setglobal();
-chongqingchengdu=[644.1624]

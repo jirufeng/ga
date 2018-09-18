@@ -14,7 +14,8 @@ for i =1:11
     arr1(1,i)=dot_array(result(1,i),result(2,i));
 end
 arr1
-show_graph(arr1);
+value = get_value(arr1);
+show_graph(arr1,value);
 
 
 

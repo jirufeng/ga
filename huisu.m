@@ -1,4 +1,4 @@
-huisu1(11)
+huisu1(33)
 function result=huisu1(edgenum)
 
     % mainly amended by Chen Zhen, 2012~2016

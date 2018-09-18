@@ -63,7 +63,7 @@ function setglobal()
             k=k+1;
         end
     end
-   
-    
+    'chongqing'
+    line_value(8,9)
     
 end

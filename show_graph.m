@@ -1,4 +1,4 @@
-function show_graph(array16_33)
+function show_graph(array16_33,value)
 global Clist CityLoc CityPop;
  X=triu(get_adjacency(array16_33));
     figure;clf;hold on;
