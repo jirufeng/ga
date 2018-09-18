@@ -10,7 +10,7 @@ function myga_TSP2(edgenum)
     population_size=300; %初始种群大小
     parent_number = 150;
     child_num = population_size - parent_number;
-    gnmax=500;  %最大代数
+    gnmax=100;  %最大代数
     pc=1; %交叉概率
     mutation_rate=0.2; %变异概率
 
@@ -44,11 +44,6 @@ function myga_TSP2(edgenum)
         end
         smnew=die(smnew);
         population1=[population;smnew];  %产生了新的种群
-        for i = 1:size(smnew,1)
-            i
-            flag = test_liantong(smnew(i,:))
-            assert (flag==1);
-        end
         [f,p]=objf(population1,Clist,CityPop,edgenum);  %计算新种群的适应度
             % index记录排序后每个值原来的行数
         [f, index] = sort(f,'descend') % 将适应度函数值从小到大排序
