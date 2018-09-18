@@ -1,37 +1,6 @@
 function setglobal()
     global line_info;
     global CityLoc CityPop Clist dot_array;
-    CiteNum = 12;
-    BitNum=(CiteNum-1)*CiteNum/2; %you chan choose 10, 30, 50, 75
-    line_value = zeros(12,12);
-    SnrReq = [Inf 3000 1200 600];
-    RateTable = [0 8 16 32];
-    city_num = 12;
-    pop = zeros(12,12);
-    flow = zeros(12,12);
-    for ii =1:city_num
-        for jj=ii+1:city_num
-               Dist = distance(CityLoc(ii,1),CityLoc(ii,2),CityLoc(jj,1),CityLoc(jj,2))*pi/180*6371;
-               %Dist= norm(CityLoc(ii,:)-CityLoc(jj,:));
-               Ind = find(SnrReq>Dist);
-               ModRate = RateTable(Ind(end));
-               line_value(ii,jj)=sqrt(CityPop(ii)*CityPop(jj))*ModRate;
-               pop(ii,jj) = sqrt(CityPop(ii)*CityPop(jj));
-               flow(ii,jj) = ModRate;
-        end
-    end
-    line_info = zeros(66,9);%两点序号 最大价值 平均人口 最大流量 实际流量 是否实际联通 是否虚拟联通 调整次数
-    k=1;
-    for i=1:city_num
-        for j=i+1:city_num
-            line_info(k,1:2)=[i j];
-            line_info(k,3)=line_value(i,j);
-            line_info(k,4)=pop(i,j);
-            line_info(k,5)=flow(i,j);
-            k=k+1;
-        end
-    end
-   
     CityLoc=[39.91667 116.41667;%北京
         45.75000 126.63333;%哈尔滨
         43.45 87.36;%乌鲁木齐
@@ -64,5 +33,37 @@ function setglobal()
             k=k+1;
         end
     end
+    CiteNum = 12;
+    BitNum=(CiteNum-1)*CiteNum/2; %you chan choose 10, 30, 50, 75
+    line_value = zeros(12,12);
+    SnrReq = [Inf 3000 1200 600];
+    RateTable = [0 8 16 32];
+    city_num = 12;
+    pop = zeros(12,12);
+    flow = zeros(12,12);
+    for ii =1:city_num
+        for jj=ii+1:city_num
+               Dist = distance(CityLoc(ii,1),CityLoc(ii,2),CityLoc(jj,1),CityLoc(jj,2))*pi/180*6371;
+               %Dist= norm(CityLoc(ii,:)-CityLoc(jj,:));
+               Ind = find(SnrReq>Dist);
+               ModRate = RateTable(Ind(end));
+               line_value(ii,jj)=sqrt(CityPop(ii)*CityPop(jj))*ModRate;
+               pop(ii,jj) = sqrt(CityPop(ii)*CityPop(jj));
+               flow(ii,jj) = ModRate;
+        end
+    end
+    line_info = zeros(66,9);%两点序号 最大价值 平均人口 最大流量 实际流量 是否实际联通 是否虚拟联通 调整次数
+    k=1;
+    for i=1:city_num
+        for j=i+1:city_num
+            line_info(k,1:2)=[i j];
+            line_info(k,3)=line_value(i,j);
+            line_info(k,4)=pop(i,j);
+            line_info(k,5)=flow(i,j);
+            k=k+1;
+        end
+    end
+   
+    
     
 end
