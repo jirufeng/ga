@@ -82,6 +82,7 @@ function result=huisu1(edgenum)
     edgenum = 16;
     break_flag = 0;
     result = zeros(50,edgenum);
+    result_max_size = size(result,1);
     result_size = 0;
     while line_order<=66
         while line_order<=66 
@@ -92,7 +93,7 @@ function result=huisu1(edgenum)
                 if test_liantong(index(stack(1:edgenum))')
                     result(result_size+1,:)=index(stack(1:edgenum))';
                     result_size=result_size+1;
-                    if result_size==51
+                    if result_size==result_max_size
                         break_flag = 1;
                         break
                     end
