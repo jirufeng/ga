@@ -1,72 +1,4 @@
-huisu1(16)
-
-function flag=canget(A)
-    n=length(A);
-    P=A;
-    for i1=2:n
-        P=P+A^i1;
-    end
-    flag = all(all(P));
-end
-function adjacency=get_view(array16) 
-    arr=eye(12);
-    global line_info;
-    num =0;
-    for line_id=1:16
-        line_index=array16(line_id);
-        x1 = line_info(line_index,1);
-        y1 = line_info(line_index,2);
-        arr(x1,y1)=1;
-        num=num+1;
-    end
-    view(biograph(arr,[],'ShowArrows','off','ShowWeights','on'));
-    adjacency=arr+arr';
-end 
-function adjacency=get_adjacency(array16) 
-    arr=eye(12);
-    global line_info;
-    num =0;
-    for line_id=1:16
-        line_index=array16(line_id);
-        x1 = line_info(line_index,1);
-        y1 = line_info(line_index,2);
-        arr(x1,y1)=1;
-        num=num+1;
-    end
-    adjacency=arr+arr';
-end 
-function flag=test_liantong(array16)
-    adjacency=get_adjacency(array16);
-    flag = canget(adjacency);
-end
-function [Clist,CityLoc,CityNum]=testcase
-    CityLoc=[39.91667 116.41667;%北京
-        45.75000 126.63333;%哈尔滨
-        43.45 87.36;%乌鲁木齐
-        34.26667,108.95000;
-        34.76667,113.65000;
-        31.14 121.29;%上海
-        30.35 114.17;
-        29.35 106.33;%重庆
-        30.40 104.04;%成都
-        29.39 91.08;%拉萨
-        25.04 102.42;
-        23.16667,113.23333];
-    CityNum = [1961.24 1063.60 311.03 846.78 862.65 2301.91 978.54 2884.62 1404.76...
-        55.94 643.20 1035.79]/100;
-
-    axesm utm   %设置投影方式，这是MATLAT自带的Universal Transverse Mercator （UTM）方式
-    Z=utmzone(CityLoc);%utmzone根据latlon20里面的数据选择他认为合适的投影区域，可以是一个台站的经纬度，也可以是所有台站的经纬度（此时是平均）
-    setm(gca,'zone',Z)
-    h = getm(gca);
-    R=zeros(size(CityLoc));
-    for i=1:length(CityLoc)
-        [x,y]= mfwdtran(h,CityLoc(i,1),CityLoc(i,2));
-        Clist(i,:)=[x;y]/1e3;
-    end
-end
-
-
+huisu1(33)
 function result=huisu1(edgenum)
 
     % mainly amended by Chen Zhen, 2012~2016
@@ -77,9 +9,10 @@ function result=huisu1(edgenum)
     global Clist CityLoc CityPop;% clist是直角坐标系坐标
     [line_info_order,index]=sortrows(line_info,-3);
     stack = [];
+    stack_locate = [];
     stack_size=0;
     line_order = 1;
-    edgenum = 16;
+    
     break_flag = 0;
     result = zeros(50,edgenum);
     result_max_size = size(result,1);
@@ -128,11 +61,11 @@ function result=huisu1(edgenum)
         end
     end
         
-    max_choice = result(max_index,:);
+    max_choice = result(max_index,:)
     get_view(max_choice);
-    value = get_value(max_choice)
+    value = get_value(max_choice);
     
-    X=triu(get_adjacency(max_choice))
+    X=triu(get_adjacency(max_choice));
     figure;clf;hold on;
     plot(CityLoc(:,2),CityLoc(:,1),'rs');
     for ii=1:CiteNum
@@ -143,7 +76,7 @@ function result=huisu1(edgenum)
             end
         end
     end
-    title(['总价值为' num2str(value)])
+    title(['总价值为' num2str(value)]);
     ylabel('纬度');
     xlabel('经度');
     figure;

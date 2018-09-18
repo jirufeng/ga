@@ -11,7 +11,7 @@ function setglobal()
     flow = zeros(12,12);
     for ii =1:city_num
         for jj=ii+1:city_num
-               Dist = distance(CityLoc(ii,1),CityLoc(ii,2),CityLoc(jj,1),CityLoc(jj,2))*pi/180*6371
+               Dist = distance(CityLoc(ii,1),CityLoc(ii,2),CityLoc(jj,1),CityLoc(jj,2))*pi/180*6371;
                %Dist= norm(CityLoc(ii,:)-CityLoc(jj,:));
                Ind = find(SnrReq>Dist);
                ModRate = RateTable(Ind(end));

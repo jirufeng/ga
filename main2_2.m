@@ -11,7 +11,7 @@ end
 
 array16 = [  20    11    16    21    61    36    28    15    25     7    63    53     4    10    26     1];
 %test_liantong(array16)
-myga_TSP2(16);
+myga_TSP2(33);
 %ga_TSP2(33);
 function adjacency=get_adjacency(array16) 
     arr=eye(12);
