@@ -39,7 +39,32 @@ for j=1:5
         end
     end
 end
-
+for i = 1: length(line_info)
+    if line_info(index(i),8)==1
+        continue;
+    end
+    flow_m = get_flow_m();
+    [shortestPath, totalCost] = Dijkstra(flow_m,line_info(index(i),1),line_info(index(i),2));
+    %转发只有一条路径。两点间通讯只有一条路径。
+    if length(shortestPath)~=3
+        continue
+    end
+    alloc_flow = if_alloc1(shortestPath);
+    if alloc_flow~=0
+        line1 = dot_array(shortestPath(1),shortestPath(2));
+        line2 = dot_array(shortestPath(2),shortestPath(3));
+        line3 = dot_array(shortestPath(1),shortestPath(3));
+        line_info(line1,6)=line_info(line1,6)-alloc_flow;
+        line_info(line2,6)=line_info(line2,6)-alloc_flow; 
+        line_info(line3,6)=alloc_flow;
+        line_info(line1,9)=line_info(line1,9)+1;
+        line_info(line2,9)=line_info(line2,9)+1;
+        line_info(line3,9)=line_info(line3,9)+1;
+        line_info(line3,8)=1;
+    else
+        line_info(line3,10)=1;
+    end
+end
 line_info
 get_all_flow()
 get_last_flow()
@@ -79,6 +104,30 @@ function best_flow = if_alloc(shortestPath)
     while alloc_flow < flow_max
         value = network_value(line_info(line3,4),alloc_flow)+network_value(line_info(line1,4),line_info(line1,6)-alloc_flow)+...
             network_value(line_info(line2,4),line_info(line2,6)-alloc_flow);
+        if value > max_value
+            max_value = value;
+            best_flow = alloc_flow;
+        end
+        alloc_flow=alloc_flow+0.25;
+    end
+end
+function best_flow = if_alloc1(shortestPath)
+    global dot_array line_info
+    line = dot_array(shortestPath(1),shortestPath(3));
+    len = length(shortestPath);
+    line_arr=[]
+    for i=1:len-1
+        line_arr=[line_arr,dot_array(shortestPath(i),shortestPath(i+1))]
+    end
+    flow_max = min(line_info(line_arr,6));
+    alloc_flow = 0;
+    max_value = 0;
+    best_flow = 0;
+    while alloc_flow < flow_max
+        value = network_value(line_info(line,4),alloc_flow);
+        for i = 1:len-1
+            value = value+network_value(line_info(line_arr(i),4),line_info(line_arr(i),6)-alloc_flow);
+        end
         if value > max_value
             max_value = value;
             best_flow = alloc_flow;
