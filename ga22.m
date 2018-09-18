@@ -11,7 +11,7 @@ function ga22(edgenum)
     population_size=300; %初始种群大小
     parent_number = 150;
     child_num = population_size - parent_number;
-    gnmax=100;  %最大代数
+    gnmax=200;  %最大代数
     pc=1; %交叉概率
     mutation_rate=0.2; %变异概率
 
@@ -53,27 +53,14 @@ function ga22(edgenum)
         x=population(1,:);
         xmax(gn,:)=x;
         gn=gn+1;
-        fopt(gn) = fobj(x(end,1:edgenum),Clist,CityPop);
+        fopt(gn) = get_value(x);
     end
 
     f = get_value(xmax(end,1:edgenum));
-    X=triu(get_adjacency(xmax(end,1:edgenum)))
-    '最大价值图'
+    '最大价值图is:'
     xmax(end,1:edgenum)
-    figure;clf;hold on;
-    plot(CityLoc(:,2),CityLoc(:,1),'rs');
-    for ii=1:CiteNum
-        for jj=1:CiteNum
-            if (X(ii,jj)==1)
-                plot([CityLoc(ii,2) CityLoc(jj,2)],...
-                    [CityLoc(ii,1) CityLoc(jj,1)],'b-');
-            end
-        end
-    end
-    title(['网络价值为' num2str(f)])
-    ylabel('纬度');
-    xlabel('经度');
-    figure;
+    show_graph(xmax(end,1:edgenum),f)
+    
     plot(fopt);
     ylabel('网络价值');
     xlabel('迭代次数');
