@@ -17,7 +17,6 @@ function [f,X]=fobj(XId,CityLoc,CityNum)
     for ii =1:city_num
         for jj=ii+1:city_num
             if (X(ii,jj)>=1)
-               %Dist= norm(CityLoc(ii,:)-CityLoc(jj,:));
                Dist = distance(CityLoc(ii,1),CityLoc(ii,2),CityLoc(jj,1),CityLoc(jj,2))*pi/180*6371;
                Ind = find(SnrReq>Dist);
                ModRate = RateTable(Ind(end));

@@ -5,7 +5,8 @@ function myga_TSP2(edgenum)
 
     CiteNum = 12;
     BitNum=(CiteNum-1)*CiteNum/2; %you chan choose 10, 30, 50, 75
-    [Clist,CityLoc,CityPop]=testcase;% clist是直角坐标系坐标
+    setglobal();
+    global Clist CityLoc CityPop;
 
     population_size=300; %初始种群大小
     parent_number = 150;
@@ -25,9 +26,8 @@ function myga_TSP2(edgenum)
         end
     end
     population=die(population);
+    population(1,:) = [57     5    40    60    31    52    41    34    51    46     1    39     6    59    26    58];
     length(population)
-    [~,p]=objf(population,Clist,CityPop,edgenum);
-
     gn=1;
     fopt=zeros(gn,1);
     xmax=zeros(gnmax,edgenum);%第几代
@@ -49,10 +49,6 @@ function myga_TSP2(edgenum)
         [f, index] = sort(f,'descend') % 将适应度函数值从小到大排序
         population = population1(index(1:parent_number), :); % 先保留一部分较优的个体
         %记录当前代最好和平均的适应度
-        
-
-        %ymean(gn)=1000/mean(f);
-        %ymax(gn)=1000/fmax;
         %记录当前代的最佳个体
         x=population(1,:);
         xmax(gn,:)=x;
@@ -61,7 +57,7 @@ function myga_TSP2(edgenum)
     end
 
     [f,X]=fobj(xmax(end,1:edgenum),Clist,CityPop);
-    
+    f = get_value(xmax(end,1:edgenum));
     X=triu(get_adjacency(xmax(end,1:edgenum)))
     figure;clf;hold on;
     plot(CityLoc(:,2),CityLoc(:,1),'rs');
@@ -92,7 +88,7 @@ function [cost,p]=objf(population,Clist,CityPop,edgenum)
     inn=size(population,1);  %读取种群大小
     cost=zeros(inn,1);
     for i=1:inn
-        cost(i)=fobj(population(i,1:edgenum),Clist,CityPop);  %计算函数值，即适应度
+        cost(i)=get_value(population(i,1:edgenum));
     end
     cost=cost'; %取距离倒数
     %根据个体的适应度计算其被选择的概率
