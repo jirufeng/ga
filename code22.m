@@ -1,4 +1,6 @@
+%code22 test if it will alloc network.
 setglobal();
+%graph is answer1.
 graph =[57     5    40    60    31    52    41    34    51    46     1    39     6    59     4     3    47     7    53    42    35    56    62 33    48    17     8    66    15    11    32    26    58]
 
 global line_info dot_array;
@@ -20,6 +22,7 @@ for i = 1: length(line_info_order)
         continue
     end
     if if_alloc(shortestPath)
+        %not excute
         line1 = dot_array(shortestPath(1),shortestPath(2));
         line2 = dot_array(shortestPath(2),shortestPath(3));
         alloc_flow = min(line_info(line1,6),line_info(line2,6));
@@ -29,6 +32,7 @@ for i = 1: length(line_info_order)
     
 end
 function flag = if_alloc(shortestPath)
+% test if it will alloc network
 global dot_array line_info
 flag = 0;
 line1 = dot_array(shortestPath(1),shortestPath(2));

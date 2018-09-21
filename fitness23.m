@@ -1,4 +1,4 @@
-function value = code23(graph)
+function value = fitness23(graph)
     global line_info dot_array;
     %line_info各列 第一个城市序号 第二个城市序号 最大价值 平均人口 最大容量 实际容量 是否实际联通 是否虚拟联通 调整次数 是否不分配流量
     %初始容量

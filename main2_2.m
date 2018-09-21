@@ -10,33 +10,6 @@ for i=1:12
 end
 
 array16 = [  20    11    16    21    61    36    28    15    25     7    63    53     4    10    26     1];
-%test_liantong(array16)
 %myga_TSP2(33);
 ga23(33)
 %ga_TSP2(33);
-function adjacency=get_adjacency(array16) 
-    arr=eye(12);
-    global line_info;
-    num =0;
-    for line_id=1:16
-        line_index=array16(line_id);
-        x1 = line_info(line_index,1);
-        y1 = line_info(line_index,2);
-        arr(x1,y1)=1;
-        num=num+1;
-    end
-    view(biograph(arr,[],'ShowArrows','off','ShowWeights','on'));
-    adjacency=arr+arr';
-end 
-function flag=test_liantong(array16)
-    adjacency=get_adjacency(array16);
-    flag = canget(adjacency);
-end
-function flag=canget(A)
-    n=length(A);
-    P=A;
-    for i1=2:n
-        P=P+A^i1;
-    end
-    flag = all(all(P));
-end

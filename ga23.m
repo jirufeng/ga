@@ -18,7 +18,7 @@ function ga23(edgenum)
     i = 1;
     while i <= parent_number
         temp = randperm(BitNum);
-        if test_liantong(temp(1:edgenum))==1
+        if test_connected(temp(1:edgenum))==1
             population(i,:) = temp(1:edgenum);
             i = i+1;
         end
@@ -43,7 +43,7 @@ function ga23(edgenum)
         population1=[population;smnew];  %产生了新的种群
         f = [];
         for i=1:size(population,1)
-            f(i)= code23(population1(i,:));  %计算新种群的适应度
+            f(i)= fitness23(population1(i,:));  %计算新种群的适应度
         end
             % index记录排序后每个值原来的行数
         [f, index] = sort(f,'descend'); % 将适应度函数值从小到大排序
@@ -74,34 +74,6 @@ function ga23(edgenum)
     figure;
 end
 
-%------------------------------------------------
-%计算所有种群的适应度,返回价值向量和累计概率
-function [cost,p]=objf(population,Clist,CityPop,edgenum)
-
-    inn=size(population,1);  %读取种群大小
-    cost=zeros(inn,1);
-    for i=1:inn
-        cost(i)=get_value(population(i,1:edgenum));
-    end
-    cost=cost'; %取距离倒数
-    %根据个体的适应度计算其被选择的概率
-    fsum=0;
-    for i=1:inn
-        fsum=fsum+cost(i)^15;% 让适应度越好的个体被选择概率越高
-    end
-    ps=zeros(inn,1);
-    for i=1:inn
-        ps(i)=cost(i)^15/fsum;
-    end
-
-    %计算累积概率
-    p=zeros(inn,1);
-    p(1)=ps(1);
-    for i=2:inn
-        p(i)=p(i-1)+ps(i);
-    end
-    p=p';
-end
 
 %--------------------------------------------------
 %根据变异概率判断是否变异
@@ -174,7 +146,7 @@ function population = die(population)
         end
         arr1 = arr+arr';
         %view(biograph(arr,[],'ShowArrows','off','ShowWeights','on'));% 显示图
-        if ~canget(arr1)
+        if ~connected(arr1)
             delete(delete_index)=i;
             delete_index=delete_index+1;
             i=i+1;

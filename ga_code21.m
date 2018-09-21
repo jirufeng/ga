@@ -1,5 +1,5 @@
 %ga 21
-function myga_TSP2(edgenum)
+function ga_code21(edgenum)
 
     % mainly amended by Chen Zhen, 2012~2016
 
@@ -20,7 +20,7 @@ function myga_TSP2(edgenum)
     i = 1;
     while i <= parent_number
         temp = randperm(BitNum);
-        if test_liantong(temp(1:edgenum))==1
+        if test_connected(temp(1:edgenum))==1
             population(i,:) = temp(1:edgenum);
             i = i+1;
         end
@@ -44,7 +44,7 @@ function myga_TSP2(edgenum)
         end
         smnew=die(smnew);
         population1=[population;smnew];  %产生了新的种群
-        [f,p]=objf(population1,Clist,CityPop,edgenum);  %计算新种群的适应度
+        f=objf(population1);  %计算新种群的适应度
             % index记录排序后每个值原来的行数
         [f, index] = sort(f,'descend') % 将适应度函数值从小到大排序
         population = population1(index(1:parent_number), :); % 先保留一部分较优的个体
@@ -53,26 +53,10 @@ function myga_TSP2(edgenum)
         x=population(1,:);
         xmax(gn,:)=x;
         gn=gn+1;
-        fopt(gn) = fobj(x(end,1:edgenum),Clist,CityPop);
+        fopt(gn) = get_value(x);
     end
-
-    [f,X]=fobj(xmax(end,1:edgenum),Clist,CityPop);
     f = get_value(xmax(end,1:edgenum));
-    X=triu(get_adjacency(xmax(end,1:edgenum)))
-    figure;clf;hold on;
-    plot(CityLoc(:,2),CityLoc(:,1),'rs');
-    for ii=1:CiteNum
-        for jj=1:CiteNum
-            if (X(ii,jj)==1)
-                plot([CityLoc(ii,2) CityLoc(jj,2)],...
-                    [CityLoc(ii,1) CityLoc(jj,1)],'b-');
-            end
-        end
-    end
-    title(['容量为' num2str(f)])
-    ylabel('纬度');
-    xlabel('经度');
-    figure;
+    show_graph(xmax(end,1:edgenum),f);
     plot(fopt);
     ylabel('网络价值');
     xlabel('迭代次数');
@@ -83,31 +67,14 @@ end
 
 %------------------------------------------------
 %计算所有种群的适应度,返回价值向量和累计概率
-function [cost,p]=objf(population,Clist,CityPop,edgenum)
-
+function cost=objf(population)
+    edgenum = size(population,2);
     inn=size(population,1);  %读取种群大小
     cost=zeros(inn,1);
     for i=1:inn
         cost(i)=get_value(population(i,1:edgenum));
     end
     cost=cost'; %取距离倒数
-    %根据个体的适应度计算其被选择的概率
-    fsum=0;
-    for i=1:inn
-        fsum=fsum+cost(i)^15;% 让适应度越好的个体被选择概率越高
-    end
-    ps=zeros(inn,1);
-    for i=1:inn
-        ps(i)=cost(i)^15/fsum;
-    end
-
-    %计算累积概率
-    p=zeros(inn,1);
-    p(1)=ps(1);
-    for i=2:inn
-        p(i)=p(i-1)+ps(i);
-    end
-    p=p';
 end
 
 %--------------------------------------------------
@@ -188,20 +155,15 @@ function population = die(population)
         end
         arr1 = arr+arr';
         %view(biograph(arr,[],'ShowArrows','off','ShowWeights','on'));% 显示图
-        if ~canget(arr1)
+        if ~connected(arr1)
             delete(delete_index)=i;
             delete_index=delete_index+1;
             i=i+1;
             continue;
         end
         i=i+1;
-         
     end
     population(delete,:)=[]
-    for i =1:size(population,1)
-        i
-        assert (test_liantong(population(i,:))==1);
-    end
 
 end
 

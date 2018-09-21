@@ -1,7 +1,5 @@
-huisu1(33)
-function result=huisu1(edgenum)
-
-    % mainly amended by Chen Zhen, 2012~2016
+backtracking_(33)
+function result=backtracking_(edgenum)
     global line_info;
     setglobal();
     CiteNum = 12;
@@ -23,7 +21,7 @@ function result=huisu1(edgenum)
             stack_size=stack_size+1;
             line_order=line_order+1;
             if stack_size == edgenum
-                if test_liantong(index(stack(1:edgenum))')
+                if test_connected(index(stack(1:edgenum))')
                     result(result_size+1,:)=index(stack(1:edgenum))';
                     result_size=result_size+1;
                     if result_size==result_max_size
@@ -64,20 +62,5 @@ function result=huisu1(edgenum)
     max_choice = result(max_index,:)
     get_view(max_choice);
     value = get_value(max_choice);
-    
-    X=triu(get_adjacency(max_choice));
-    figure;clf;hold on;
-    plot(CityLoc(:,2),CityLoc(:,1),'rs');
-    for ii=1:CiteNum
-        for jj=1:CiteNum
-            if (X(ii,jj)==1)
-                plot([CityLoc(ii,2) CityLoc(jj,2)],...
-                    [CityLoc(ii,1) CityLoc(jj,1)],'b-');
-            end
-        end
-    end
-    title(['总价值为' num2str(value)]);
-    ylabel('纬度');
-    xlabel('经度');
-    figure;
+    show_graph(max_choice,value);
 end

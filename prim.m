@@ -13,7 +13,6 @@ arr1 = zeros(1,11);
 for i =1:11
     arr1(1,i)=dot_array(result(1,i),result(2,i));
 end
-arr1
 value = get_value(arr1);
 show_graph(arr1,value);
 
@@ -105,7 +104,6 @@ function setglobal2()
             k=k+1;
         end
     end
-    'chongqing'
-    line_value(8,9)
+
     
 end
