@@ -1,15 +1,13 @@
 
-function ga22(edgenum)
-
-    % mainly amended by Chen Zhen, 2012~2016
+function ga23(edgenum)
 
     CiteNum = 12;
-    BitNum=(CiteNum-1)*CiteNum/2; %you chan choose 10, 30, 50, 75
+    BitNum=(CiteNum-1)*CiteNum/2; 
     setglobal();
     global Clist CityLoc CityPop;
-
-    population_size=300; %初始种群大小
-    parent_number = 150;
+    global line_info;
+    population_size=50; %初始种群大小
+    parent_number = 25;
     child_num = population_size - parent_number;
     gnmax=200;  %最大代数
     pc=1; %交叉概率
@@ -26,8 +24,7 @@ function ga22(edgenum)
         end
     end
     population=die(population);
-    %population(1,:) = [57     5    40    60    31    52    41    34    51    46     1    39     6    59    26    58];
-    length(population)
+    %population(1,:) = [57     5    40    60    31    52    41    34    51    46     1    39     6    59     4     3    47     7    53    42    35    56    62 33    48    17     8    66    15    11    32    26    58];
     gn=1;
     fopt=zeros(gn,1);
     xmax=zeros(gnmax,edgenum);%第几代
@@ -44,22 +41,30 @@ function ga22(edgenum)
         end
         smnew=die(smnew);
         population1=[population;smnew];  %产生了新的种群
-        [f,p]=objf(population1,Clist,CityPop,edgenum);  %计算新种群的适应度
+        f = [];
+        for i=1:size(population,1)
+            f(i)= code23(population1(i,:));  %计算新种群的适应度
+        end
             % index记录排序后每个值原来的行数
-        [f, index] = sort(f,'descend') % 将适应度函数值从小到大排序
+        [f, index] = sort(f,'descend'); % 将适应度函数值从小到大排序
         population = population1(index(1:parent_number), :); % 先保留一部分较优的个体
+        line_info_back = line_info;
         %记录当前代最好和平均的适应度
         %记录当前代的最佳个体
         x=population(1,:);
         xmax(gn,:)=x;
         gn=gn+1;
-        fopt(gn) = get_value(x);
+        fopt(gn) = f(1);
     end
-
-    f = get_value(xmax(end,1:edgenum));
+    %output
+    f = fopt(gn);
     '最大价值图is:'
     xmax(end,1:edgenum)
-    show_graph(xmax(end,1:edgenum),f)
+    'line_info is:'
+    line_info_back
+    '最大价值:'
+    f
+    show_graph(xmax(end,1:edgenum),f);
     
     plot(fopt);
     ylabel('网络价值');
@@ -154,8 +159,8 @@ function population = die(population)
     global line_info;
     delete=[];
     delete_index = 1;
-    row_num = size(population,1)
-    edge_num = size(population,2)
+    row_num = size(population,1);
+    edge_num = size(population,2);
     i = 1;
     while i<=row_num
         arr = eye(12);
@@ -177,7 +182,7 @@ function population = die(population)
         end
         i=i+1;    
     end
-    population(delete,:)=[]
+    population(delete,:)=[];
 
 end
 

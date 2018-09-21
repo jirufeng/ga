@@ -1,17 +1,46 @@
-setglobal();
-graph =[57     5    40    60    31    52    41    34    51    46     1    39     6    59     4     3    47     7    53    42    35    56    62 33    48    17     8    66    15    11    32    26    58]
+function value = code23(graph)
+    global line_info dot_array;
+    %line_info各列 第一个城市序号 第二个城市序号 最大价值 平均人口 最大容量 实际容量 是否实际联通 是否虚拟联通 调整次数 是否不分配流量
+    %初始容量
+    %距离矩阵设计，人口越多，距离越远，流量越多，距离越近，流量为0为无限远，和目标函数有相关。两条线段平均。乘法开根号，乘法好像是尽可能找中间的。
+    line_info(:,[6 7 8 9 10,11])=0;
+    for i = 1:length(graph)
+        line_info(graph(i),6) = line_info(graph(i),6)+line_info(graph(i),5);
+        line_info(graph(i),7) = 1;
+        line_info(graph(i),8) = 1;
+        line_info(graph(i),11)=line_info(graph(i),6);
+    end
+    [line_info_order,index]=sortrows(line_info,-4);
+    value_first = get_value();
+    for j=1:5
+        for i = 1: length(line_info)
+            if line_info(index(i),8)==1
+                continue;
+            end
+            flow_m = get_flow_m();
+            [shortestPath, totalCost] = Dijkstra(flow_m,line_info(index(i),1),line_info(index(i),2));
+            %转发只有一条路径。两点间通讯只有一条路径。
+            if length(shortestPath)~=3
+                continue
+            end
+            alloc_flow = if_alloc(shortestPath);
+            line1 = dot_array(shortestPath(1),shortestPath(2));
+            line2 = dot_array(shortestPath(2),shortestPath(3));
+            line3 = dot_array(shortestPath(1),shortestPath(3));
+            if alloc_flow~=0
 
-global line_info dot_array;
-%两点序号 最大价值 平均人口 最大流量 实际流量 是否实际联通 是否虚拟联通
-%距离矩阵设计，人口越多，距离越远，流量越多，距离越近，流量为0为无限远，和目标函数有相关。两条线段平均。乘法开根号，乘法好像是尽可能找中间的。
-for i = 1:length(graph)
-    line_info(graph(i),6) = line_info(graph(i),5);
-    line_info(graph(i),7) = 1;
-    line_info(graph(i),8) = 1;
-end
-[line_info_order,index]=sortrows(line_info,-4);
-value_first = get_value();
-for j=1:5
+                line_info(line1,6)=line_info(line1,6)-alloc_flow;
+                line_info(line2,6)=line_info(line2,6)-alloc_flow; 
+                line_info(line3,6)=alloc_flow;
+                line_info(line1,9)=line_info(line1,9)+1;
+                line_info(line2,9)=line_info(line2,9)+1;
+                line_info(line3,9)=line_info(line3,9)+1;
+                line_info(line3,8)=1;
+            else
+                line_info(line3,10)=1;
+            end
+        end
+    end
     for i = 1: length(line_info)
         if line_info(index(i),8)==1
             continue;
@@ -22,7 +51,7 @@ for j=1:5
         if length(shortestPath)~=3
             continue
         end
-        alloc_flow = if_alloc(shortestPath);
+        alloc_flow = if_alloc1(shortestPath);
         if alloc_flow~=0
             line1 = dot_array(shortestPath(1),shortestPath(2));
             line2 = dot_array(shortestPath(2),shortestPath(3));
@@ -38,39 +67,15 @@ for j=1:5
             line_info(line3,10)=1;
         end
     end
-end
-for i = 1: length(line_info)
-    if line_info(index(i),8)==1
-        continue;
-    end
-    flow_m = get_flow_m();
-    [shortestPath, totalCost] = Dijkstra(flow_m,line_info(index(i),1),line_info(index(i),2));
-    %转发只有一条路径。两点间通讯只有一条路径。
-    if length(shortestPath)~=3
-        continue
-    end
-    alloc_flow = if_alloc1(shortestPath);
-    if alloc_flow~=0
-        line1 = dot_array(shortestPath(1),shortestPath(2));
-        line2 = dot_array(shortestPath(2),shortestPath(3));
-        line3 = dot_array(shortestPath(1),shortestPath(3));
-        line_info(line1,6)=line_info(line1,6)-alloc_flow;
-        line_info(line2,6)=line_info(line2,6)-alloc_flow; 
-        line_info(line3,6)=alloc_flow;
-        line_info(line1,9)=line_info(line1,9)+1;
-        line_info(line2,9)=line_info(line2,9)+1;
-        line_info(line3,9)=line_info(line3,9)+1;
-        line_info(line3,8)=1;
-    else
-        line_info(line3,10)=1;
+    value_last = get_value();
+    value = value_last;
+    arr1 = zeros(12,12);
+    arr2=zeros(12,12);
+    for i=1:66
+        arr1(line_info(i,1),line_info(i,2))=line_info(i,11);
+        arr2(line_info(i,1),line_info(i,2))=line_info(i,6);
     end
 end
-line_info
-get_all_flow()
-get_last_flow()
-value_last = get_value();
-value_first
-value_last
 function num=get_value()
     global line_info;
     num = 0;

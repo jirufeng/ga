@@ -12,7 +12,7 @@ global Clist CityLoc CityPop;
             end
         end
     end
-    title(['总价值为' num2str(value)]);
+    %title(['总价值为' num2str(value)]);
     ylabel('纬度');
     xlabel('经度');
     figure;

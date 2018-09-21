@@ -1,4 +1,4 @@
-
+%ga 21
 function myga_TSP2(edgenum)
 
     % mainly amended by Chen Zhen, 2012~2016
