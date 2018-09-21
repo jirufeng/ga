@@ -1,4 +1,0 @@
-clear ;clc;close all;
-
-myga_TSP2(16);
-ga_TSP2(33);
